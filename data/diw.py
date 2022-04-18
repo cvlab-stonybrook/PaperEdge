@@ -18,9 +18,9 @@ class DIW(Dataset):
         self.is_train = is_train
         self.num = num
         # load the list of diw images
-        with open('./data/diw_shuffle.txt', 'r') as fid:
+        with open('./data/diw_5k.txt', 'r') as fid:
             self.X = fid.read().splitlines()
-        self.X = [root_dir + t + '.png' for t in self.X]
+        self.X = [root_dir + '/img/' + t + '.png' for t in self.X]
 
         with open('./data/bgtex.txt', 'r') as fid:
             self.bgtex = fid.read().splitlines()
