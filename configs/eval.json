@@ -1,0 +1,6 @@
+{
+    "Enet_ckpt": "G_w_checkpoint_13820.pt",
+    "Tnet_ckpt": "L_w_checkpoint_27640.pt",
+    "docunet_benchmark_img_dir": "# path to the docunet benchmark image folder",
+    "dst_dir": "# path to saving the output results"
+}

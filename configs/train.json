@@ -1,0 +1,14 @@
+{
+    "batch_size": 64,
+    "epochs": 20,
+    "exp_dir": "# folder to save training log, checkpoints, etc",
+    "lr_G": 1e-5,
+    "lr_L": 1e-5,
+    "G_ckpt": "# path to the Enet model checkpoint.",
+    "L_ckpt": "# path to the Tnet model checkpoint.",
+    "doc3d_root": "# root dir to the doc3d dataset.",
+    "diw_root": "# root dir to the diw dataset.",
+    "vis_port": 10086,
+    "vis_freq": 100,
+    "brief": "demo training"
+}
