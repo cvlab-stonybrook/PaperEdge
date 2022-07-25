@@ -1,6 +1,9 @@
 # PaperEdge
 The code and the DIW dataset for "Learning From Documents in the Wild to Improve Document Unwarping" (SIGGRAPH 2022)
 
+[[paper](https://drive.google.com/file/d/1z_8YaCc3aGWTHqFP55vgpSaEBz_oaQQe/view?usp=sharing)]
+[[supplementary material](https://drive.google.com/file/d/1szMa0D90E9caKVwonnZFduTpla52sKEz/view?usp=sharing)]
+
 ## Documents In the Wild (DIW) dataset (2.13GB)
 [link](https://drive.google.com/file/d/1qAmLurt6bK0ro8PnRz6rBgVs1rfrsdKi/view?usp=sharing)
 
