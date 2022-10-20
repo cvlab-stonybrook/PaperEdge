@@ -67,10 +67,9 @@ if __name__ == '__main__':
 
     gs_d = F.interpolate(gs_d, (im.size(2), im.size(3)), mode='bilinear', align_corners=True)
     gs_y = F.grid_sample(im, gs_d.permute(0, 2, 3, 1), align_corners=True).detach()
-
     tmp_y = gs_y.squeeze().permute(1, 2, 0).cpu().numpy()
     cv2.imwrite(f'{dst_dir}/result_gs.png', tmp_y * 255.)
-    # 精调： 由ls_d还原为原始图像
+
     ls_d = F.interpolate(ls_d, (im.size(2), im.size(3)), mode='bilinear', align_corners=True)
     ls_y = F.grid_sample(gs_y, ls_d.permute(0, 2, 3, 1), align_corners=True).detach()
     ls_y = ls_y.squeeze().permute(1, 2, 0).cpu().numpy()
