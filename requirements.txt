@@ -1,0 +1,9 @@
+matplotlib>=3.2.2
+visdom>=0.1.8.9
+opencv_python
+scipy
+torch
+numpy
+hdf5storage>=0.1.18
+ignite>=1.1.0
+kornia>=0.6.8

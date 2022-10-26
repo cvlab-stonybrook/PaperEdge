@@ -1,4 +1,5 @@
 # PaperEdge
+<a href="https://huggingface.co/spaces/SWHL/PaperEdgeDemo"><img src="https://img.shields.io/badge/%F0%9F%A4%97-Open%20in%20Spaces-blue"></a><br/>
 The code and the DIW dataset for "Learning From Documents in the Wild to Improve Document Unwarping" (SIGGRAPH 2022)
 
 [[paper](https://drive.google.com/file/d/1z_8YaCc3aGWTHqFP55vgpSaEBz_oaQQe/view?usp=sharing)]
