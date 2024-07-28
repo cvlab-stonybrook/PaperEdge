@@ -1,7 +1,8 @@
 # -*- encoding: utf-8 -*-
+import os
+import glob
 import argparse
 import copy
-import json
 from pathlib import Path
 
 import cv2
@@ -22,30 +23,15 @@ def load_img(img_path):
     return im
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--Enet_ckpt', type=str,
-                        default='models/G_w_checkpoint_13820.pt')
-    parser.add_argument('--Tnet_ckpt', type=str,
-                        default='models/L_w_checkpoint_27640.pt')
-    parser.add_argument('--img_path', type=str, default='images/3.jpg')
-    parser.add_argument('--out_dir', type=str, default='output')
-    args = parser.parse_args()
+def get_device() -> str:
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    img_path = args.img_path
-    dst_dir = args.out_dir
-    Path(dst_dir).mkdir(parents=True, exist_ok=True)
 
-    netG = GlobalWarper().to('cuda')
-    netG.load_state_dict(torch.load(args['Enet_ckpt'])['G'])
-    netG.eval()
-
-    netL = LocalWarper().to('cuda')
-    netL.load_state_dict(torch.load(args['Tnet_ckpt'])['L'])
-    netL.eval()
-
-    warpUtil = WarperUtil(64).to('cuda')
-
+def unwarp_img(
+    netG: torch.nn.Module, 
+    netL: torch.nn.Module, 
+    img_path: str, 
+):
     gs_d, ls_d = None, None
     with torch.no_grad():
         x = load_img(img_path)
@@ -68,9 +54,57 @@ if __name__ == '__main__':
     gs_d = F.interpolate(gs_d, (im.size(2), im.size(3)), mode='bilinear', align_corners=True)
     gs_y = F.grid_sample(im, gs_d.permute(0, 2, 3, 1), align_corners=True).detach()
     tmp_y = gs_y.squeeze().permute(1, 2, 0).cpu().numpy()
-    cv2.imwrite(f'{dst_dir}/result_gs.png', tmp_y * 255.)
 
     ls_d = F.interpolate(ls_d, (im.size(2), im.size(3)), mode='bilinear', align_corners=True)
     ls_y = F.grid_sample(gs_y, ls_d.permute(0, 2, 3, 1), align_corners=True).detach()
     ls_y = ls_y.squeeze().permute(1, 2, 0).cpu().numpy()
-    cv2.imwrite(f'{dst_dir}/result_ls.png', ls_y * 255.)
+    return tmp_y, ls_y
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--Enet_ckpt', type=str,
+                        default='models/G_w_checkpoint_13820.pt')
+    parser.add_argument('--Tnet_ckpt', type=str,
+                        default='models/L_w_checkpoint_27640.pt')
+    parser.add_argument('--img_source', type=str, default='images/3.jpg')
+    parser.add_argument('--out_dir', type=str, default='output')
+    args = parser.parse_args()
+
+    img_source = args.img_source
+    dst_dir = args.out_dir
+    Path(dst_dir).mkdir(parents=True, exist_ok=True)
+
+    netG = GlobalWarper().to('cuda')
+    netG.load_state_dict(torch.load(args.Enet_ckpt)['G'])
+    netG.eval()
+
+    netL = LocalWarper().to('cuda')
+    netL.load_state_dict(torch.load(args.Tnet_ckpt)['L'])
+    netL.eval()
+
+    warpUtil = WarperUtil(64).to('cuda')
+    
+    if Path(img_source).is_dir():
+        img_paths = glob.glob(os.path.join(img_source, '*'))
+        for img_path in img_paths:
+            tmp_y, ls_y = unwarp_img(netG, netL, img_path)
+            cv2.imwrite(
+                os.path.join(dst_dir, f"netG_{os.path.basename(img_path)}"), 
+                tmp_y* 255.,
+            )
+            cv2.imwrite(
+                os.path.join(dst_dir, f"netL_{os.path.basename(img_path)}"), 
+                ls_y* 255.,
+            )
+    else:
+        tmp_y, ls_y = unwarp_img(netG, netL, img_source)
+        cv2.imwrite(
+            os.path.join(dst_dir, f"netG_{os.path.basename(img_source)}"), 
+            tmp_y* 255.,
+        )
+        cv2.imwrite(
+            os.path.join(dst_dir, f"netL_{os.path.basename(img_source)}"), 
+            ls_y* 255.,
+        )
+
